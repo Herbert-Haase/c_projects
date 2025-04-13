@@ -1,7 +1,9 @@
-// stack
+// stack.c
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "stack.h"
 
 #define SIZE 32
 
@@ -15,30 +17,10 @@ int size(void);
 bool isempty(void);
 bool isfull(void);
 void empty(void);
+void print_stack(void);
 static void stack_overflow(void);
 static void stack_underflow(void);
-static void print_stack(void);
 
-int main(void) {
-  push(1);
-  push(2);
-  push(3);
-  push(4);
-  push(5);
-
-  print_stack();
-  printf("pop: %d\n", pop());
-  printf("peek: %d\n", peek());
-  printf("size: %d\n", size());
-  pop();
-  puts("pop\n");
-  print_stack();
-  empty();
-  print_stack();
-  printf("peek: %d\n", peek());
-  printf("size: %d\n", size());
-  printf("pop: %d\n", pop());
-}
 
 void print_stack(void) {
   printf("Stack (top=%d): ", top);
