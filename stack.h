@@ -6,16 +6,20 @@
 
 #define SIZE 32
 
-// extern static int stack[SIZE];
-// extern static int top;
+typedef struct {
+  int arr[SIZE];
+  int size;
+} Stack;
 
-void push(int);
-int pop(void);
-int peek(void);
-int size(void);
-bool isempty(void);
-bool isfull(void);
-void empty(void);
-void print_stack(void);
+void push(Stack*, int);
+int pop(Stack*);
+int peek(Stack*);
+int size(Stack*);
+bool isempty(Stack*);
+bool isfull(Stack*);
+void initialize(Stack*);
+void empty(Stack*);
+void print_stack(Stack*);
+
 
 #endif

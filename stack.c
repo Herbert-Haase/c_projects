@@ -5,27 +5,25 @@
 
 #include "stack.h"
 
-#define SIZE 32
+//#define SIZE 32
 
-static int stack[SIZE];
-static int top = 0;
-
-void push(int);
-int pop(void);
-int peek(void);
-int size(void);
-bool isempty(void);
-bool isfull(void);
-void empty(void);
-void print_stack(void);
+void push(Stack*, int);
+int pop(Stack*);
+int peek(Stack*);
+int size(Stack*);
+bool isempty(Stack*);
+bool isfull(Stack*);
+void initialize(Stack*);
+void empty(Stack*);
+void print_stack(Stack*);
 static void stack_overflow(void);
 static void stack_underflow(void);
 
 
-void print_stack(void) {
-  printf("Stack (top=%d): ", top);
-  for (int i = 0; i < top; i++) {
-    printf("%d ", stack[i]);
+void print_stack(Stack *stack) {
+  printf("Stack (size=%d): ", stack->size);
+  for (int i = 0; i < stack->size; i++) {
+    printf("%d ", stack->arr[i]);
   }
   printf("\n");
 }
@@ -40,30 +38,43 @@ void stack_underflow(void) {
   exit(1);
 }
 
-int size(void) { return top; }
-
-bool isfull(void) { return top == SIZE; }
-
-bool isempty(void) { return top == 0; }
-
-void push(int element) {
-  if (isfull()) {
-    stack_overflow();
-  } else
-    stack[top++] = element;
+void initialize(Stack *stack) {
+  stack->size = 0;
 }
 
-int pop(void) {
-  if (isempty()) {
-    stack_underflow();
-  }
-  return stack[--top];
+bool isempty(Stack *stack) {
+  return stack->size == 0;
 }
 
-int peek(void) {
-  if (top == 0)
-    return 0;
-  return stack[top - 1];
+bool isfull(Stack *stack) {
+  return stack->size == SIZE;
 }
 
-void empty(void) { top = 0; }
+void push(Stack *stack, int value) {
+  if(isfull(stack)) stack_overflow();
+  stack->arr[(stack->size)++] = value;
+}
+
+int pop(Stack *stack) {
+  if(isempty(stack)) stack_underflow();
+  return stack->arr[--(stack->size)];
+}
+
+int peek(Stack *stack) {
+  return stack->arr[stack->size];
+}
+
+int size(Stack *stack) {
+  return stack->size;
+}
+
+void empty(Stack *stack) {
+  initialize(stack);
+}
+
+
+
+
+
+
+
