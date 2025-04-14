@@ -17,7 +17,7 @@ int peek(Stack*);
 int size(Stack*);
 bool isempty(Stack*);
 bool isfull(Stack*);
-void initialize(Stack*);
+Stack* init_stack(void);
 void empty(Stack*);
 void print_stack(Stack*);
 

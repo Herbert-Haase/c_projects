@@ -5,20 +5,17 @@
 
 #include "stack.h"
 
-//#define SIZE 32
-
-void push(Stack*, int);
-int pop(Stack*);
-int peek(Stack*);
-int size(Stack*);
-bool isempty(Stack*);
-bool isfull(Stack*);
-void initialize(Stack*);
-void empty(Stack*);
-void print_stack(Stack*);
+void push(Stack *, int);
+int pop(Stack *);
+int peek(Stack *);
+int size(Stack *);
+bool isempty(Stack *);
+bool isfull(Stack *);
+Stack *init_stack(void);
+void empty(Stack *);
+void print_stack(Stack *);
 static void stack_overflow(void);
 static void stack_underflow(void);
-
 
 void print_stack(Stack *stack) {
   printf("Stack (size=%d): ", stack->size);
@@ -29,52 +26,46 @@ void print_stack(Stack *stack) {
 }
 
 void stack_overflow(void) {
-  printf("stack overflow: %s at %d", __FILE__, __LINE__);
+  printf("stack overflow: %s at %d\n", __FILE__, __LINE__);
   exit(1);
 }
 
 void stack_underflow(void) {
-  printf("stack underflow: %s at %d", __FILE__, __LINE__);
+  printf("stack underflow: %s at %d\n", __FILE__, __LINE__);
   exit(1);
 }
 
-void initialize(Stack *stack) {
+Stack *init_stack(void) {
+  Stack *stack = malloc(sizeof(Stack));
+  if (!stack)
+    exit(1);
   stack->size = 0;
+  return stack;
 }
 
-bool isempty(Stack *stack) {
-  return stack->size == 0;
-}
+bool isempty(Stack *stack) { return stack->size == 0; }
 
-bool isfull(Stack *stack) {
-  return stack->size == SIZE;
-}
+bool isfull(Stack *stack) { return stack->size == SIZE; }
 
 void push(Stack *stack, int value) {
-  if(isfull(stack)) stack_overflow();
+  if (isfull(stack))
+    stack_overflow();
   stack->arr[(stack->size)++] = value;
 }
 
 int pop(Stack *stack) {
-  if(isempty(stack)) stack_underflow();
+  if (isempty(stack))
+    stack_underflow();
   return stack->arr[--(stack->size)];
 }
 
 int peek(Stack *stack) {
-  return stack->arr[stack->size];
+  if (stack->size > 0) {
+    return stack->arr[stack->size - 1];
+  }
+  return 0;
 }
 
-int size(Stack *stack) {
-  return stack->size;
-}
+int size(Stack *stack) { return stack->size; }
 
-void empty(Stack *stack) {
-  initialize(stack);
-}
-
-
-
-
-
-
-
+void empty(Stack *stack) { stack->size = 0; }
