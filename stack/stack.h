@@ -15,7 +15,7 @@ typedef struct Stack {
   int (*peek)(struct Stack*);
   bool (*isempty)(struct Stack*);
   bool (*isfull)(struct Stack*);
-  void (*empty)(struct Stack*);
+  void (*clear)(struct Stack*);
   void (*print_stack)(struct Stack*);
 } Stack;
 

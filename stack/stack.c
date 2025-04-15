@@ -12,7 +12,7 @@ int size(Stack *);
 bool isempty(Stack *);
 bool isfull(Stack *);
 Stack *init_stack(void);
-void empty(Stack *);
+void clear(Stack *);
 void print_stack(Stack *);
 static void stack_overflow(void);
 static void stack_underflow(void);
@@ -48,7 +48,7 @@ Stack *init_stack(void) {
   stack->peek = peek;
   stack->isempty = isempty;
   stack->isfull = isfull;
-  stack->empty = empty;
+  stack->clear = clear;
   stack->print_stack = print_stack;
   return stack;
 }
@@ -76,4 +76,4 @@ int peek(Stack *stack) {
   return 0;
 }
 
-void empty(Stack *stack) { stack->size = 0; }
+void clear(Stack *stack) { stack->size = 0; }

@@ -18,8 +18,8 @@ int main(void) {
   stack->pop(stack);
   puts("pop");
   stack->print_stack(stack);
-  stack->empty(stack);
-  puts("empty");
+  stack->clear(stack);
+  puts("clear");
   stack->print_stack(stack);
   printf("peek: %d\n", stack->peek(stack));
   printf("size: %d\n", stack->size);
