@@ -1,28 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "stack.h"
+
+#include "queue.h"
 
 int main(void) {
-  Stack *stack = init_stack();
-  push(stack, 1);
-  push(stack, 2);
-  push(stack, 3);
-  push(stack, 4);
-  push(stack, 5);
+  Queue *queue = init_queue();
+  push(queue, 1);
+  push(queue, 2);
+  push(queue, 3);
+  push(queue, 4);
+  push(queue, 5);
 
-  print_stack(stack);
-  printf("pop: %d\n", pop(stack));
-  printf("peek: %d\n", peek(stack));
-  printf("size: %d\n", size(stack));
-  pop(stack);
+  print_queue(queue);
+  printf("pop: %d\n", pop(queue));
+  printf("peek: %d\n", peek(queue));
+  printf("size: %d\n", queue->size);
+  pop(queue);
   puts("pop");
-  print_stack(stack);
-  empty(stack);
-  puts("empty");
-  print_stack(stack);
-  printf("peek: %d\n", peek(stack));
-  printf("size: %d\n", size(stack));
-  printf("pop: %d\n", pop(stack));
+  print_queue(queue);
+  clear(queue);
+  puts("clear");
+  print_queue(queue);
+  printf("peek: %d\n", peek(queue));
+  printf("size: %d\n", queue->size);
+  printf("pop: %d\n", pop(queue));
 
-  free(stack);
+  free(queue);
 }
