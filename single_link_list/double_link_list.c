@@ -1,3 +1,4 @@
+// double_link_list.c
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,11 +9,6 @@
     exit(12);                                                                  \
   }
 /* macro ends here */
-
-typedef struct SingleLL {
-  int value;
-  struct SingleLL *next;
-} SingleLL;
 
 typedef struct DoubleLL {
   struct DoubleNode *head;
@@ -26,63 +22,45 @@ typedef struct DoubleNode {
   struct DoubleNode *prev;
 } DoubleNode;
 
-SingleLL *singlell_create(int value) {
-  SingleLL *node = malloc(sizeof(SingleLL));
-  OUTOFMEMORY(node);
-  node->value = value;
-  node->next = NULL;
-  return node;
+DoubleLL *doublell_create() {
+  DoubleLL *list = malloc(sizeof(DoubleLL));
+  OUTOFMEMORY(list)
+  list->head = NULL;
+  list->tail = NULL;
+  list->size = 0;
+  return list;
 }
 
-DoubleNode *doublell_create(int value) {
+DoubleNode *doublenode_create(int value) {
   DoubleNode *node = malloc(sizeof(DoubleNode));
-  OUTOFMEMORY(node);
+  OUTOFMEMORY(node)
   node->value = value;
   node->next = NULL;
   node->prev = NULL;
   return node;
 }
 
-void singlell_append(SingleLL **head, int value) {
-  if (!head)
-    return;
-  SingleLL *new_node = singlell_create(value);
-  if (!*head) {
-    *head = new_node;
-    return;
-  }
-  SingleLL *p = *head;
-  while (p->next)
-    p = p->next;
-  p->next = new_node;
-}
-
-void doublell_append(DoubleLL *list, int value) {
+void doublell_append(DoubleLL **list, int value) {
   if (!list)
     return;
-  DoubleNode *new_node = doublell_create(value);
-  if (list->size == 0) {
-    list->head = new_node;
-    list->tail = new_node;
+  DoubleNode *new_node = doublenode_create(value);
+  DoubleLL *new_list = doublell_create();
+  if (!*list)
+    *list = new_list;
+  if ((*list)->size == 0) {
+    (*list)->head = new_node;
+    (*list)->tail = new_node;
   } else {
-    new_node->prev = list->tail;
-    list->tail->next = new_node;
+    new_node->prev = (*list)->tail;
+    (*list)->tail->next = new_node;
   }
-  list->size++;
-}
-
-void singlell_prepend(SingleLL **head, int value) {
-  if (!head)
-    return;
-  SingleLL *new_node = singlell_create(value);
-  new_node->next = *head;
-  *head = new_node;
+  (*list)->size++;
 }
 
 void doublell_prepend(DoubleLL *list, int value) {
   if (!list)
     return;
-  DoubleNode *new_node = doublell_create(value);
+  DoubleNode *new_node = doublenode_create(value);
   if (list->size == 0) {
     list->head = new_node;
     list->tail = new_node;
@@ -93,28 +71,11 @@ void doublell_prepend(DoubleLL *list, int value) {
   list->size++;
 }
 
-void singlell_insert_at(SingleLL **head, int idx, int value) {
-  if (!head || idx < 0)
-    return;
-  if (idx == 0) {
-    singlell_prepend(head, value);
-    return;
-  }
-  SingleLL *p = *head;
-  for (int i = 0; p && i < idx - 1; i++)
-    p = p->next;
-  if (!p)
-    return;
-  SingleLL *new_node = singlell_create(value);
-  new_node->next = p->next;
-  p->next = new_node;
-}
-
 void doublell_insert_at(DoubleLL *list, int idx, int value) {
   if (!list || idx >= list->size)
     return;
   DoubleNode *p;
-  DoubleNode *new_node = doublell_create(value);
+  DoubleNode *new_node = doublenode_create(value);
   if (idx < (list->size / 2)) {
     p = list->head;
     for (int i = 0; i < idx - 1; i++) {
@@ -137,17 +98,6 @@ void doublell_insert_at(DoubleLL *list, int idx, int value) {
   list->size++;
 }
 
-void singlell_replace_at(SingleLL **head, int idx, int value) {
-  if (!head || idx < 0)
-    return;
-  SingleLL *p = *head;
-  for (int i = 0; p && i < idx; i++)
-    p = p->next;
-  if (!p)
-    return;
-  p->value = value;
-}
-
 void doublell_replace_at(DoubleLL *list, int idx, int value) {
   if (!list || idx >= list->size)
     return;
@@ -167,20 +117,9 @@ void doublell_replace_at(DoubleLL *list, int idx, int value) {
   }
 }
 
-void singlell_print(const SingleLL *head) {
-  printf("Single Linked List: ");
-  int count = 0;
-  while (head) {
-    printf("%d ", head->value);
-    head = head->next;
-    count++;
-  }
-  printf("(size=%d)\n", count);
-}
-
 void doublell_print(const DoubleLL *list) {
   printf("Double Linked List: front");
-  DoubleNode* p = list->head;
+  DoubleNode *p = list->head;
   while (p) {
     printf("%d ", p->value);
     p = p->next;
@@ -195,32 +134,12 @@ void doublell_print(const DoubleLL *list) {
   printf("(size=%d)\n", list->size);
 }
 
-int singlell_size(const SingleLL *head) {
-  int len = 0;
-  while (head) {
-    len++;
-    head = head->next;
-  }
-  return len;
-}
-
-void singlell_clear(SingleLL **head) {
-  if (!head)
+void doublell_clear(DoubleLL *list) {
+  if (!list)
     return;
-  SingleLL *p = *head;
-  while (p) {
-    SingleLL *next = p->next;
-    free(p);
-    p = next;
-  }
-  *head = NULL;
-}
-
-void doublell_clear(DoubleLL *list){
-  if(!list) return;
   DoubleNode *p = list->head;
-  while(p) {
-    DoubleNode* next = p->next;
+  while (p) {
+    DoubleNode *next = p->next;
     free(p);
     p = next;
   }
@@ -228,16 +147,16 @@ void doublell_clear(DoubleLL *list){
 }
 
 int main(void) {
-  SingleLL *list = NULL;
-  singlell_append(&list, 1);
-  singlell_append(&list, 3);
-  singlell_prepend(&list, 0);
-  singlell_print(list);
+  DoubleLL *list = NULL;
+  doublell_append(&list, 1);
+  doublell_append(&list, 3);
+  doublell_prepend(&list, 0);
+  doublell_print(list);
 
-  singlell_replace_at(&list, 0, 0);
-  singlell_insert_at(&list, 2, 2);
-  singlell_print(list);
+  doublell_replace_at(&list, 0, 0);
+  doublell_insert_at(&list, 2, 2);
+  doublell_print(list);
 
-  singlell_clear(&list);
+  doublell_clear(&list);
   return 0;
 }
