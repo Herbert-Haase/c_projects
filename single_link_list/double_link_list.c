@@ -1,44 +1,12 @@
 // double_link_list.c
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#define OUTOFMEMORY(p)                                                         \
-  do {                                                                         \
-    if (!(p)) {                                                                \
-      fprintf(stderr, "out of memory: %s at %d", __FILE__, __LINE__);          \
-      exit(12);                                                                \
-    }                                                                          \
-  } while (0)
-/* macro ends here */
-
-typedef struct DoubleLL {
-  struct DoubleNode *head;
-  struct DoubleNode *tail;
-  int size;
-} DoubleLL;
-
-typedef struct DoubleNode {
-  int value;
-  struct DoubleNode *next;
-  struct DoubleNode *prev;
-} DoubleNode;
-
-int doublell_create(DoubleLL **list);
-DoubleNode *doublenode_create(int value);
-void doublell_append(DoubleLL *list, int value);
-void doublell_prepend(DoubleLL *list, int value);
-void doublell_insert_at(DoubleLL *list, int idx, int value);
-void doublell_replace_at(DoubleLL *list, int idx, int value);
-void doublell_print(const DoubleLL *list);
-void doublell_clear(DoubleLL *list);
-
+#include "double_link_list.h"
+#include "link_list.h"
 int doublell_create(DoubleLL **list) {
   if (!list)
     return 1;
   if (!*list) {
     *list = malloc(sizeof(DoubleLL));
-    OUTOFMEMORY(list)
+    OUTOFMEMORY(list);
   }
   (*list)->head = NULL;
   (*list)->tail = NULL;
@@ -48,7 +16,7 @@ int doublell_create(DoubleLL **list) {
 
 DoubleNode *doublenode_create(int value) {
   DoubleNode *node = malloc(sizeof(DoubleNode));
-  OUTOFMEMORY(node)
+  OUTOFMEMORY(node);
   node->value = value;
   node->next = NULL;
   node->prev = NULL;
@@ -166,28 +134,3 @@ void doublell_clear(DoubleLL *list) {
   list->size = 0;
 }
 
-int main(void) {
-  DoubleLL *list = NULL;
-  doublell_create(&list);
-  doublell_append(list, 0);
-  doublell_append(list, 1);
-  doublell_append(list, 2);
-  doublell_append(list, 3);
-  doublell_append(list, 4);
-  doublell_append(list, 5);
-  doublell_append(list, 6);
-  doublell_append(list, 7);
-  doublell_append(list, 8);
-  doublell_append(list, 9);
-  // doublell_prepend(list, 1);
-  // doublell_print(list);
-  //
-  // doublell_replace_at(list, 6, 99);
-  // doublell_insert_at(list, 7, 99);
-  // doublell_print(list);
-
-  doublell_clear(list);
-  doublell_print(list);
-  free(list);
-  return 0;
-}

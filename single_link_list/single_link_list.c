@@ -1,19 +1,6 @@
 // single_link_list.c
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#define OUTOFMEMORY(p)                                                         \
-  if (!(p)) {                                                                  \
-    fprintf(stderr, "out of memory: %s at %d", __FILE__, __LINE__);            \
-    exit(12);                                                                  \
-  }
-/* macro ends here */
-
-typedef struct SingleLL {
-  int value;
-  struct SingleLL *next;
-} SingleLL;
+#include "single_link_list.h"
+#include "link_list.h"
 
 SingleLL *singlell_create(int value) {
   SingleLL *node = malloc(sizeof(SingleLL));
@@ -105,17 +92,3 @@ void singlell_clear(SingleLL **head) {
   *head = NULL;
 }
 
-int main(void) {
-  SingleLL *list = NULL;
-  singlell_append(&list, 1);
-  singlell_append(&list, 3);
-  singlell_prepend(&list, 0);
-  singlell_print(list);
-
-  singlell_replace_at(&list, 0, 0);
-  singlell_insert_at(&list, 2, 2);
-  singlell_print(list);
-
-  singlell_clear(&list);
-  return 0;
-}
