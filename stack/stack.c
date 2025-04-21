@@ -4,20 +4,18 @@
 #include <stdlib.h>
 
 #include "stack.h"
+#define SIZE 32
 
-void push(Stack *, int);
-int pop(Stack *);
-int peek(Stack *);
-int size(Stack *);
-bool isempty(Stack *);
-bool isfull(Stack *);
-Stack *init_stack(void);
-void clear(Stack *);
-void print_stack(Stack *);
+struct stack_type {
+  int arr[SIZE];
+  int size;
+  int max_size;
+};
+
 static void stack_overflow(void);
 static void stack_underflow(void);
 
-void print_stack(Stack *stack) {
+void print_stack(Stack stack) {
   printf("Stack (size=%d): ", stack->size);
   for (int i = 0; i < stack->size; i++) {
     printf("%d ", stack->arr[i]);
@@ -35,45 +33,40 @@ void stack_underflow(void) {
   exit(1);
 }
 
-Stack *init_stack(void) {
-  Stack *stack = malloc(sizeof(Stack));
+Stack init_stack(void) {
+  Stack stack = malloc(sizeof(struct stack_type));
   if (!stack) {
     fprintf(stderr, "out of memory: %s at %d\n", __FILE__, __LINE__);
     exit(1);
   }
   stack->size = 0;
   stack->max_size = SIZE;
-  stack->push = push;
-  stack->pop = pop;
-  stack->peek = peek;
-  stack->isempty = isempty;
-  stack->isfull = isfull;
-  stack->clear = clear;
-  stack->print_stack = print_stack;
   return stack;
 }
 
-bool isempty(Stack *stack) { return stack->size == 0; }
+int size(Stack stack) { return stack->size;}
 
-bool isfull(Stack *stack) { return stack->size == stack->max_size; }
+bool isempty(Stack stack) { return stack->size == 0; }
 
-void push(Stack *stack, int value) {
+bool isfull(Stack stack) { return stack->size == stack->max_size; }
+
+void push(Stack stack, int value) {
   if (isfull(stack))
     stack_overflow();
   stack->arr[(stack->size)++] = value;
 }
 
-int pop(Stack *stack) {
+int pop(Stack stack) {
   if (isempty(stack))
     stack_underflow();
   return stack->arr[--(stack->size)];
 }
 
-int peek(Stack *stack) {
+int peek(Stack stack) {
   if (stack->size > 0) {
     return stack->arr[stack->size - 1];
   }
   return 0;
 }
 
-void clear(Stack *stack) { stack->size = 0; }
+void clear(Stack stack) { stack->size = 0; }
