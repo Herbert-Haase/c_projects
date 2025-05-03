@@ -1,25 +1,4 @@
-// #!/usr/bin/tcc -run
-
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#define STR_LEN 80
-
-void create_acc(char *user_n, char *pw);
-void transfer_money(int amount);
-int amount_balance(char *user_n);
-void login(char *user_n, char *pw);
-
-typedef struct {
-  char user_n[STR_LEN + 1];
-  char pw[STR_LEN + 1];
-  int balance;
-} acc;
-
-static double balance;
-static char user_n[STR_LEN + 1];
-static char pw[STR_LEN + 1];
+#include "functions.h"
 
 int main(void) {
   while (true) {
@@ -33,102 +12,66 @@ int main(void) {
     printf("Your order please: ");
 
     int order = getchar();
-    if (order == EOF) exit(1);
+    while ((getchar()) != '\n')
+      ;
+    if (order == EOF)
+      exit(1);
     switch (order) {
     case 'a':
-      printf("Username: ");
+      puts("(a) create a new account");
+      printf("Username: \n");
       scanf("%s", user_n);
-      printf("\nPassword: ");
+      printf("Password: \n");
       scanf("%s", pw);
       create_acc(user_n, pw);
       break;
     case 't':
-      if (*user_n) {
-        printf("amount: ");
+      puts("(t) transfer money from your account");
+      if (*logged_in_as.user_n != '\0') {
+        printf("user name: \n");
+        scanf("%s", user_n);
+        printf("amount: \n");
         int amount;
         scanf("%d", &amount);
-        transfer_money(amount);
+        if (transfer_money(user_n, amount)) {
+          if (transfer_money(logged_in_as.user_n, -amount)) {
+            puts("money transferred successfully");
+          } else {
+              transfer_money(user_n, -amount);
+            }
+        }
       } else {
         puts("please login first");
       }
       break;
     case 'c':
+      puts("(c) check the balance of your account");
       if (*user_n) {
+        int balance;
         balance = amount_balance(user_n);
-        printf("Your balance: %g", balance);
+        printf("Your balance is: %d\n", balance);
       } else {
         puts("please login first");
       }
       break;
     case 'l':
-      printf("Username: ");
+      puts("(l) login using username and password");
+      printf("Username: \n");
       scanf("%s", user_n);
-      puts("");
-      printf("Password: ");
+      printf("Password: \n");
       scanf("%s", pw);
       login(user_n, pw);
       break;
     case 'q':
+      puts("(q) exit programm");
       puts("See you soon");
       exit(EXIT_SUCCESS);
       break;
     default:
       printf("Unknown command: '%c'\n", (char)order);
     }
-    while ((getchar()) != '\n');
+    while ((getchar()) != '\n')
+      ;
   }
 }
 
-void create_acc(char *user_n, char *pw) {
-  char in_n[] = "account_data.dat";
-  FILE *in = fopen(in_n, "rb+");
-  if (in == NULL) {
-    fprintf(stderr, "data unwritable: %s at %d\n", __FILE__, __LINE__);
-    exit(EXIT_FAILURE);
-  }
-  acc old_user;
-  while (true) {
-    size_t ret_code = fread(&old_user, sizeof(acc), 1, in);
-    // printf("ret_code is: %zu\n", ret_code);
-    if (ret_code) {
-      // printf("user name is: %s\n", old_user.user_n);
-      if (!strcmp(old_user.user_n, user_n)) {
-        puts("User already exists\n");
-        return;
-      }
-    } else {
-      if (feof(in)) {
-        break;
-      } else if (ferror(in)) {
-        printf("Error reading %s\n", in_n);
-        exit(EXIT_FAILURE);
-      }
-    }
-  }
-  acc new_user = {.user_n = *user_n, .pw = *pw, .balance = 0};
-  strcpy(new_user.user_n, user_n);
-  strcpy(new_user.pw, pw);
-  // printf("user is: %s %s %d", new_user.user_n, new_user.pw, new_user.balance);
-  if (!fwrite(&new_user, sizeof(acc), 1, in)) {
-    fprintf(stderr, "data unwritable: %s at %d\n", __FILE__, __LINE__);
-    exit(EXIT_FAILURE);
-  }
-  fclose(in);
-}
-
-void transfer_money(int amount) {
-  // char *account_file = "account_data.txt";
-  // FILE *fp = fopen(account_file, "a");
-  // if (fp == NULL) {
-  //   fprintf(stderr, "data unwritable\n");
-  //   exit(EXIT_FAILURE);
-  // }
-  // acc user = {.user_n = *user_n, .pw = *pw, .balance = 0};
-  // if (fwrite(&user, sizeof(acc), 1, fp)) {
-  //   fprintf(stderr, "data unwritable\n");
-  //   exit(EXIT_FAILURE);
-  // }
-  // fclose(fp);
-}
-int amount_balance(char *user_n) {}
-void login(char *user_n, char *pw) {}
