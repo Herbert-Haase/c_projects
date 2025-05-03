@@ -1,8 +1,9 @@
-#!/ usr / bin / tcc - run
+// #!/usr/bin/tcc -run
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #define STR_LEN 80
 
 void create_acc(char *user_n, char *pw);
@@ -73,34 +74,68 @@ int main(void) {
   }
 }
 
-int create_acc(char *user_n, char *pw) {
-  char *account_file = "account_data.txt";
-  FILE *fp = fopen(account_file, "a+");
-  if (fp == NULL) {
-    fprintf(stderr, "data unwritable\n");
+void create_acc(char *user_n, char *pw) {
+  char in_n[] = "account_data.dat";
+  char out_n[] = "outputXXXXXX";
+  char buff[STR_LEN];
+  if (mkstemp(out_n) != -1) {
+    // perror("mkstemp");
+  }
+  FILE *in = fopen(in_n, "rb+");
+  if (in == NULL) {
+    fprintf(stderr, "data unwritable: %s at %d\n", __FILE__, __LINE__);
     exit(EXIT_FAILURE);
   }
-  acc user = {.user_n = *user_n, .pw = *pw, .balance = 0};
-  if (fwrite(&user, sizeof(acc), 1, fp)) {
-    fprintf(stderr, "data unwritable\n");
+  acc old_user;
+  while (true) {
+    size_t ret_code = fread(&old_user, sizeof(acc), 1, in);
+    printf("ret_code is: %zu\n", ret_code);
+    if (ret_code /*sizeof(acc)*/) {
+      printf("user name is: %s\n", old_user.user_n);
+      if (!strcmp(old_user.user_n, user_n)) {
+        puts("User already exists");
+        exit(EXIT_SUCCESS);
+      }
+    } else {
+      if (feof(in)) {
+        break;
+      } else if (ferror(in)) {
+        printf("Error reading %s\n", in_n);
+        exit(EXIT_FAILURE);
+      }
+    }
+  }
+  rewind(in);
+  // FILE *out = fopen(out_n, "r");
+  // if (in == NULL) {
+  //   fprintf(stderr, "data unwritable\n");
+  //   exit(EXIT_FAILURE);
+  // }
+  acc new_user = {.user_n = *user_n, .pw = *pw, .balance = 0};
+  strcpy(new_user.user_n, user_n);
+  strcpy(new_user.pw, pw);
+  printf("user is: %s %s %d", new_user.user_n, new_user.pw, new_user.balance);
+  if (!fwrite(&new_user, sizeof(acc), 1, in)) {
+    fprintf(stderr, "data unwritable: %s at %d\n", __FILE__, __LINE__);
     exit(EXIT_FAILURE);
   }
-  fclose(fp);
+  fclose(in);
+  remove(out_n);
 }
 
 void transfer_money(int amount) {
-  char *account_file = "account_data.txt";
-  FILE *fp = fopen(account_file, "a");
-  if (fp == NULL) {
-    fprintf(stderr, "data unwritable\n");
-    exit(EXIT_FAILURE);
-  }
-  acc user = {.user_n = *user_n, .pw = *pw, .balance = 0};
-  if (fwrite(&user, sizeof(acc), 1, fp)) {
-    fprintf(stderr, "data unwritable\n");
-    exit(EXIT_FAILURE);
-  }
-  fclose(fp);
+  // char *account_file = "account_data.txt";
+  // FILE *fp = fopen(account_file, "a");
+  // if (fp == NULL) {
+  //   fprintf(stderr, "data unwritable\n");
+  //   exit(EXIT_FAILURE);
+  // }
+  // acc user = {.user_n = *user_n, .pw = *pw, .balance = 0};
+  // if (fwrite(&user, sizeof(acc), 1, fp)) {
+  //   fprintf(stderr, "data unwritable\n");
+  //   exit(EXIT_FAILURE);
+  // }
+  // fclose(fp);
 }
 int amount_balance(char *user_n) {}
 void login(char *user_n, char *pw) {}
