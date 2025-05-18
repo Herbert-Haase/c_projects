@@ -24,8 +24,8 @@ int main(void) {
     int i = 0;
     fflush(stdout);
     if (!fgets(line, sizeof(line), stdin)) {
-      perror("fgets");
-      exit(EXIT_FAILURE);
+      printf("\n"); // makes ctrl+d and exit look similar
+      exit(EXIT_SUCCESS);
     }
     line[strcspn(line, "\n")] = 0;
 
@@ -43,6 +43,9 @@ int main(void) {
         chdir(args[1]);
       }
       continue;
+    }
+    if (strcmp(args[0], "exit") == 0) {
+      exit(EXIT_SUCCESS);
     }
 
     pid_t cpid = fork();
