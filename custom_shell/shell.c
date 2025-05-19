@@ -53,9 +53,18 @@ int main(void) {
       perror("fork");
       exit(EXIT_FAILURE);
     } else if (cpid == 0) {
+      char *env_p = getenv("PATH");
+      char *token = strtok(env_p, ":");
+      while (token) {
+        char abs_p[MAX_ARGS + strlen(token)];
+        strcpy(abs_p, token);
+        strcat(abs_p, "/");
+        strcat(abs_p, args[0]);
+        execv(abs_p, args);
+        token = strtok(NULL, ":");
+      }
 
-      execvp(args[0], args);
-      perror("execvp");
+      perror("execv");
       exit(EXIT_FAILURE);
 
     } else {
