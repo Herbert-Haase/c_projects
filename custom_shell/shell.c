@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,6 +10,8 @@
 #define MAX_ARGS 100
 #define MAX_LINE 1024
 
+static bool iserr = false;
+
 int main(void) {
   puts("Welcome to mini shell");
   while (1) {
@@ -17,7 +20,8 @@ int main(void) {
       perror("getcwd");
       exit(EXIT_FAILURE);
     }
-    printf("(%s) $ ", cwd);
+    printf("%c[%dm(%s) $", 0x1B, iserr ? 31 : 97, cwd);
+    printf("%c[%dm ", 0x1B, 97);
     fflush(stdout);
     char line[MAX_LINE];
     char *args[MAX_ARGS];
@@ -53,6 +57,12 @@ int main(void) {
       perror("fork");
       exit(EXIT_FAILURE);
     } else if (cpid == 0) {
+      if (strcmp(args[0], "!") == 0) {
+        if (strcmp(args[1], "true"))
+          _exit(EXIT_FAILURE);
+        else if (strcmp(args[1], "false"))
+          _exit(EXIT_SUCCESS);
+      }
       char *env_p = getenv("PATH");
       char *token = strtok(env_p, ":");
       while (token) {
@@ -64,8 +74,8 @@ int main(void) {
         token = strtok(NULL, ":");
       }
 
-      perror("execv");
-      exit(EXIT_FAILURE);
+      fprintf(stderr, "%s: no such command\n", args[0]);
+      _exit(EXIT_FAILURE);
 
     } else {
       int wstat;
@@ -74,6 +84,15 @@ int main(void) {
         perror("wait");
         exit(EXIT_FAILURE);
       }
+      char cwd[MAX_LINE];
+      if (!getcwd(cwd, MAX_LINE)) {
+        perror("getcwd");
+        exit(EXIT_FAILURE);
+      }
+      if (WEXITSTATUS(wstat)) {
+        iserr = true;
+      } else
+        iserr = false;
     }
   }
   return 0;
